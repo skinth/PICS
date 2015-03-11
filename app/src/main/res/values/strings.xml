@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Pics</string>
+    <string name="signin_button">Sign In</string>
+    <string name="dummy_content">PICS</string>
+    <string name="take_photo">Shot</string>
+    <string name="exit">Exit</string>
+    <string name="delete">Delete</string>
+</resources>
