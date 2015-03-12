@@ -11,6 +11,8 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.is.pics.login.LoginHandle;
+
 
 public class HomeActivity extends Activity {
 
@@ -22,6 +24,8 @@ public class HomeActivity extends Activity {
         GridView gridview = (GridView) findViewById(R.id.gridview);
 
         gridview.setAdapter(new ImageAdapter(this));
+
+        System.out.println(LoginHandle.getInstance().getLoggedUser().getUserItems());
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -59,6 +63,11 @@ public class HomeActivity extends Activity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println(LoginHandle.getInstance().getLoggedUser().getUserItems());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

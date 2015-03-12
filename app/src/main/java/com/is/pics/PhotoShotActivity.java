@@ -114,12 +114,14 @@ public class PhotoShotActivity extends Activity implements CvCameraViewListener2
     }
 
     public void onCameraViewStarted(int width, int height) {
+        Toast.makeText(this, "Sono in start xamera view", Toast.LENGTH_SHORT).show();
     }
 
     public void onCameraViewStopped() {
     }
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+        System.out.println("frame camera");
         return inputFrame.rgba();
     }
 
@@ -189,57 +191,6 @@ public class PhotoShotActivity extends Activity implements CvCameraViewListener2
         String fileName = Environment.getExternalStorageDirectory().getPath() +"/"+ name;
         mOpenCvCameraView.takePicture(fileName);
         Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
-        //new HttpRequestTask().execute(name);
         return false;
-    }
-
-    private class HttpRequestTask extends AsyncTask<String, Void, Item>{
-        StatefulRestTemplate statefulRestTemplate = LoginHandle.getInstance().getStatefulRestTemplate();
-
-        @Override
-        protected Item doInBackground(String... params) {
-            String name = params[0];
-            System.out.println("name: "+name);
-            String fileName = Environment.getExternalStorageDirectory().getPath() +"/"+ name;
-            System.out.println("filename: "+fileName);
-            try {
-                MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
-                //parts.add("Content-Type", MediaType.MULTIPART_FORM_DATA);
-                parts.add("name",name);
-                parts.add("file", new FileSystemResource(fileName));
-                statefulRestTemplate.initEntity(parts);
-                //System.out.println("ph"+statefulRestTemplate.getRequestEntity().getHeaders());
-                //System.out.println("User: "+usr.getBody().getUsername());
-                //HttpEntity requestEntity = new HttpEntity(parts, statefulRestTemplate.getRequestHeaders());
-                //System.out.println(requestEntity.getHeaders());
-                //System.out.println("User: "+usr.getBody().getUsername());
-                HttpEntity<Item> result = statefulRestTemplate.exchangeForOur(URI.create(LoginHandle.BASE_URL + "/upload"),
-                        HttpMethod.POST, Item.class);
-                statefulRestTemplate.initEntity(null);
-                System.out.println(result.getHeaders());
-                System.out.println(result.getBody().getByteImage());
-                //clean-up
-                //File f = new File(name);
-                //f.delete();
-        /*this.loggedUser = statefulRestTemplate.exchangeForOur(URI.create(BASE_URL+"/profile"),
-                HttpMethod.GET,MyUser.class).getBody();*/
-                LoginHandle.getInstance().getLoggedUser().getUserItems().add(result.getBody());
-                return result.getBody();
-
-            } catch (Exception e) {
-                Log.e("PhotoShotActivity", e.getMessage(), e);
-
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Item item) {
-            Intent intent = new Intent(PhotoShotActivity.this, HomeActivity.class);
-            //intent.putExtra("name", loggedUser.getUsername());
-            startActivity(intent);
-        }
-
     }
 }
