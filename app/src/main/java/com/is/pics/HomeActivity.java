@@ -32,41 +32,15 @@ public class HomeActivity extends Activity {
                 Toast.makeText(HomeActivity.this, "" + position, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(HomeActivity.this, ShowImageActivity.class);
                 intent.putExtra("position", position);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
         });
-
-        // Get the message from the intent
-       /* Intent intent = getIntent();
-        String message = LoginHandle.getInstance().getLoggedUser().getUsername(); //intent.getStringExtra("name");
-        System.out.println("messa: "+message);
-        TextView l = new TextView(this);
-        l.setText(message);
-
-        l.setTextSize(56);
-        setContentView(l);
-
-        ImageView iw = new ImageView(this);
-
-        try {
-            byte[] imgbyte = LoginHandle.getInstance().getLoggedUser().getUserItems().iterator().next().getByteImage();
-            String imgString = Base64.encodeToString((byte[]) imgbyte, Base64.NO_WRAP);
-            System.out.println(imgString);
-            byte[] encodeByte = Base64.decode(imgString, Base64.DEFAULT);
-            iw.setImageBitmap(BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length));
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        setContentView(iw);*/
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println(LoginHandle.getInstance().getLoggedUser().getUserItems());
     }
 
     @Override
@@ -83,13 +57,9 @@ public class HomeActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-       /* if (id == R.id.action_settings) {
-            return true;
-        }*/
         if (id == R.id.shot){
             Intent i = new Intent(this,PhotoShotActivity.class);
-            //i.setPackage("org.opencv.engine.BIND");
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         }
         if(id == R.id.refresh){

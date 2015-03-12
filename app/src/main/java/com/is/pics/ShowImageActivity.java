@@ -102,6 +102,7 @@ public class ShowImageActivity extends Activity {
         @Override
         protected void onPostExecute(Item item) {
             Intent intent = new Intent(ShowImageActivity.this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
 
