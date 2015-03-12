@@ -3,6 +3,7 @@ package com.is.pics;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -53,6 +54,11 @@ public class PhotoShotActivity extends Activity implements CvCameraViewListener2
     private SubMenu mColorEffectsMenu;
     private MenuItem[] mResolutionMenuItems;
     private SubMenu mResolutionMenu;
+    private MenuItem mSwitchCamera;
+
+    private String cameras[] = {"Retro","Frontal"};
+
+    private int indexCamera = 0;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -86,9 +92,8 @@ public class PhotoShotActivity extends Activity implements CvCameraViewListener2
         setContentView(R.layout.photo_shot_surface_view);
 
         mOpenCvCameraView = (PhotoShotView) findViewById(R.id.tutorial3_activity_java_surface_view);
-
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-
+        mOpenCvCameraView.setCameraIndex(indexCamera);
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
 
@@ -114,14 +119,12 @@ public class PhotoShotActivity extends Activity implements CvCameraViewListener2
     }
 
     public void onCameraViewStarted(int width, int height) {
-        Toast.makeText(this, "Sono in start xamera view", Toast.LENGTH_SHORT).show();
     }
 
     public void onCameraViewStopped() {
     }
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-        System.out.println("frame camera");
         return inputFrame.rgba();
     }
 
@@ -158,6 +161,9 @@ public class PhotoShotActivity extends Activity implements CvCameraViewListener2
             idx++;
          }
 
+        if(Camera.getNumberOfCameras()>1)
+            mSwitchCamera = menu.add(cameras[indexCamera^1]);
+
         return true;
     }
 
@@ -177,6 +183,13 @@ public class PhotoShotActivity extends Activity implements CvCameraViewListener2
             String caption = Integer.valueOf(resolution.width).toString() + "x" + Integer.valueOf(resolution.height).toString();
             Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();
         }
+        else if(item==mSwitchCamera){
+            indexCamera = (indexCamera+1)%2;
+            item.setTitle(cameras[indexCamera^1]);
+            mOpenCvCameraView.disableView();
+            mOpenCvCameraView.setCameraIndex(indexCamera);
+            mOpenCvCameraView.enableView();
+        }
 
         return true;
     }
@@ -188,7 +201,8 @@ public class PhotoShotActivity extends Activity implements CvCameraViewListener2
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateandTime = sdf.format(new Date());
         String name = "sample_picture_" + currentDateandTime + ".jpg";
-        String fileName = Environment.getExternalStorageDirectory().getPath() +"/"+ name;
+        String fileName = Environment.getExternalStorageDirectory().getPath() +"/"+
+                          Environment.DIRECTORY_DCIM +"/"+ name;
         mOpenCvCameraView.takePicture(fileName);
         Toast.makeText(this, fileName + " saved", Toast.LENGTH_SHORT).show();
         return false;

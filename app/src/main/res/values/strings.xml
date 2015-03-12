@@ -5,4 +5,5 @@
     <string name="take_photo">Shot</string>
     <string name="exit">Exit</string>
     <string name="delete">Delete</string>
+    <string name="refresh">Refresh</string>
 </resources>

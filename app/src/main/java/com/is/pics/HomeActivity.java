@@ -92,9 +92,9 @@ public class HomeActivity extends Activity {
             //i.setPackage("org.opencv.engine.BIND");
             startActivity(i);
         }
-        if(id == R.id.exit){
+        if(id == R.id.refresh){
            finish();
-            System.exit(0);
+           startActivity(getIntent());
         }
 
         return super.onOptionsItemSelected(item);
