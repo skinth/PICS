@@ -3,6 +3,7 @@ package com.is.pics;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 
 public class SplashScreenActivity extends Activity {

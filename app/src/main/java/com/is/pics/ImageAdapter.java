@@ -1,6 +1,7 @@
 package com.is.pics;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.view.View;
@@ -52,7 +53,9 @@ public class ImageAdapter extends BaseAdapter {
             byte[] imgbyte = items[position].getByteImage();
             String imgString = Base64.encodeToString((byte[]) imgbyte, Base64.NO_WRAP);
             byte[] encodeByte = Base64.decode(imgString, Base64.DEFAULT);
-            imageView.setImageBitmap(BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length));
+            Bitmap blarge = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            Bitmap bscaled = Bitmap.createScaledBitmap(blarge, 300, 300,true);
+            imageView.setImageBitmap(bscaled);
         }catch (Exception e){
             e.printStackTrace();
         }

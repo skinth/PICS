@@ -5,7 +5,7 @@
                 tools:context="com.is.pics.app.ShowImageActivity">
 
     <ImageView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/item_img" android:layout_alignParentTop="true" android:layout_centerHorizontal="true"
             android:contentDescription="image"/>

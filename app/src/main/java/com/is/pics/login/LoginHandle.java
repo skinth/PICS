@@ -7,7 +7,7 @@ import com.is.pics.model.MyUser;
  * Created by stefano on 25/02/15.
  */
 public class LoginHandle {
-    public static final String BASE_URL = "http://picstv.herokuapp.com";
+    public static final String BASE_URL = "http://192.168.1.8:8080"/*http://picstv.herokuapp.com"*/;
 
     private MyUser loggedUser;
     private StatefulRestTemplate statefulRestTemplate = new StatefulRestTemplate();
