@@ -29,7 +29,7 @@ public class StatefulRestTemplate extends RestTemplate {
         this.requestEntity = null;
         this.getMessageConverters().add(new FormHttpMessageConverter());
         this.getMessageConverters().add(new StringHttpMessageConverter());
-        this.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        //this.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
     public void initHeaders(){

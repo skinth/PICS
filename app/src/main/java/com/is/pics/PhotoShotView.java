@@ -84,4 +84,6 @@ public class PhotoShotView extends JavaCameraView implements PictureCallback {
         }
 
     }
+
+
 }
