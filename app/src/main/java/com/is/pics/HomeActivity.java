@@ -2,8 +2,10 @@ package com.is.pics;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +14,14 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.is.pics.login.LoginHandle;
+import com.is.pics.login.StatefulRestTemplate;
+import com.is.pics.model.Item;
+import com.is.pics.model.MyUser;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+
+import java.net.URI;
 
 
 public class HomeActivity extends Activity {
@@ -63,8 +73,7 @@ public class HomeActivity extends Activity {
             startActivity(i);
         }
         if(id == R.id.refresh){
-           finish();
-           startActivity(getIntent());
+            new HttpRequestTask().execute();
         }
 
         return super.onOptionsItemSelected(item);
@@ -75,5 +84,32 @@ public class HomeActivity extends Activity {
        
     }
 
+    private class HttpRequestTask extends AsyncTask<Void, Void, MyUser> {
+
+        StatefulRestTemplate statefulRestTemplate = LoginHandle.getInstance().getStatefulRestTemplate();
+
+        @Override
+        protected MyUser doInBackground(Void... params) {
+            try {
+                HttpEntity<MyUser> result = statefulRestTemplate.exchangeForOur(
+                                        URI.create(LoginHandle.BASE_URL + "/profile"),
+                        HttpMethod.GET, MyUser.class);
+                System.out.println("USERNAME"+result.getBody().getUsername());
+                LoginHandle.getInstance().setLoggedUser(result.getBody());
+
+            } catch (Exception e) {
+                Log.e("HomeActivity", e.getMessage(), e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(MyUser user) {
+            finish();
+            startActivity(getIntent());
+        }
+
+    }
 
 }
