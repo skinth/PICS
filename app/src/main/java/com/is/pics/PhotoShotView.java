@@ -2,6 +2,9 @@ package com.is.pics;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
@@ -15,6 +18,7 @@ import com.is.pics.login.LoginHandle;
 import com.is.pics.login.StatefulRestTemplate;
 import com.is.pics.model.Item;
 
+import org.imgscalr.Scalr;
 import org.opencv.android.JavaCameraView;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -22,7 +26,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -89,17 +97,83 @@ public class PhotoShotView extends JavaCameraView implements PictureCallback {
         // Write the image in a file (in jpeg format)
         try {
             FileOutputStream fos = new FileOutputStream(mPictureFileName);
-
-            fos.write(data);
+           // Bitmap blarge = BitmapFactory.decodeByteArray(data, 0, data.length);
+            float maxWidth = 1200;
+            float maxHeight = 720;
+            Bitmap blarge = decodeSampledBitmapFromByteArray(data,Math.round(maxWidth),Math.round(maxHeight));
+            System.out.println("BLARGE WIDTH: "+blarge.getWidth());
+            System.out.println("BLARGE HEIGHT: "+blarge.getHeight());
+            float ratio = 0;
+            float width = blarge.getWidth();
+            float height = blarge.getHeight();
+            float newWidth = width;
+            float newHeight = height;
+            if(width>maxWidth){
+                ratio = maxWidth/width;
+                System.out.println("RATIO: "+ratio);
+                newWidth = maxWidth;
+                newHeight = height*ratio;
+                height = height * ratio;
+                width = width * ratio;
+            }
+            if(height>maxHeight){
+                ratio = maxHeight/height;
+                newWidth = width*ratio;
+                newHeight = maxHeight;
+            }
+            System.out.println("NEW WIDTH: "+newWidth);
+            System.out.println("NEW HEIGHT: "+newHeight);
+            Bitmap bscaled = Bitmap.createScaledBitmap(blarge,Math.round(newWidth), Math.round(newHeight),true);
+            System.out.println("BSCALED WIDTH: "+bscaled.getWidth());
+            bscaled.compress(Bitmap.CompressFormat.JPEG,80,fos);
             fos.close();
 
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             Log.e("PictureDemo", "Exception in photoCallback", e);
         }
-
         new HttpRequestTask().execute(mPictureFileName);
 
     }
+
+    public static Bitmap decodeSampledBitmapFromByteArray(byte[] res, int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(res, 0,res.length, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeByteArray(res, 0,res.length, options);
+    }
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+
 
     private class HttpRequestTask extends AsyncTask<String, Void, Item> {
         StatefulRestTemplate statefulRestTemplate = LoginHandle.getInstance().getStatefulRestTemplate();
@@ -112,6 +186,8 @@ public class PhotoShotView extends JavaCameraView implements PictureCallback {
                 MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
                 //parts.add("Content-Type", MediaType.MULTIPART_FORM_DATA);
                 parts.add("name",name);
+
+
                 parts.add("file", new FileSystemResource(name));
                 statefulRestTemplate.initEntity(parts);
                 //System.out.println("ph"+statefulRestTemplate.getRequestEntity().getHeaders());

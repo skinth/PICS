@@ -2,6 +2,7 @@ package com.is.pics;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -46,7 +47,8 @@ public class ShowImageActivity extends Activity {
             id = items[position].getItemId();
             String imgString = Base64.encodeToString((byte[]) imgbyte, Base64.NO_WRAP);
             byte[] encodeByte = Base64.decode(imgString, Base64.DEFAULT);
-            imageView.setImageBitmap(BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length));
+            Bitmap image = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            imageView.setImageBitmap(image);
         }catch (Exception e){
             e.printStackTrace();
         }
